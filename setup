@@ -1,0 +1,71 @@
+#Modified by @nanamod96
+#!/bin/bash
+
+source etc/banner
+
+echo -e "𝗔𝗞𝗠𝗢𝗗 𝗧𝗢𝗢𝗟 𝗩𝟰:    ${LIGHTGREEN}𝗦𝗘𝗧𝗨𝗣 𝗧𝗢𝗢𝗟...${NOCOLOR}"
+echo "================================"
+
+quickbms_dir=$PREFIX/share/quickbms
+
+function redirect {
+ echo -e "${LIGHTGREEN}KHỞI ĐỘNG TOOL${NOCOLOR}"
+ echo -ne '#####                     (33%)\r'
+ sleep 1
+ echo -ne '#############             (66%)\r'
+ sleep 1
+ echo -ne '#######################   (100%)\r'
+ echo -ne '\n'
+ chmod +x bottool
+ mv bottool /data/data/com.termux/files/usr/bin
+ chmod +x akmodv4
+ bash akmodv4
+}
+
+function quickbms_check {
+  echo -e "${YELLOW}Kiểm tra các gói còn thiếu${NOCOLOR}"
+  FILE=$quickbms_dir/quickbms_4gb_files
+  if [ -f "$FILE" ]; then
+      echo -e "${LIGHTGREEN}Program has been installed.${NOCOLOR}"
+      redirect
+  else 
+      echo -e "${RED}PROGRAM NOT FOUND.${NOCOLOR}"
+      quickbms_install
+      redirect
+  fi
+}
+
+function quickbms_install {
+  echo -e "${LIGHTGREEN}Cài đặt các gói bắt buộc${NOCOLOR}"
+  sleep 1
+  wget https://aluigi.altervista.org/papers/quickbms_linux.zip
+  sleep 1
+  unzip quickbms_linux.zip
+  sleep 1
+  mkdir $quickbms_dir
+  sleep 1
+  chmod +x quickbms_4gb_files quickbms
+  sleep 1
+  cp quickbms_4gb_files quickbms  $quickbms_dir
+  sleep 1
+  rm -rf quickbms*
+  sleep 1
+  chmod +x etc/*.bms
+}
+
+echo -e "${YELLOW}Tải xuống gói cài đặt${NOCOLOR}"
+
+packages=("wget" "unzip" "curl" "x11-repo" "qemu-system-i386" "qemu-user-i386")
+
+for pkg in ${packages[@]}; do
+
+    is_pkg_installed=$(dpkg-query -W --showformat='${Status}\n' ${pkg} | grep "install ok installed")
+
+    if [ "${is_pkg_installed}" == "install ok installed" ]; then
+        echo -e ${GREEN}${pkg}${NOCOLOR} is installed.
+    else [ "" = "${is_pkg_installed}" ];
+     echo -e "${RED}No ${pkg}. Setting up ${pkg}.${NOCOLOR}" 
+    pkg install ${pkg} -y
+    fi
+done
+quickbms_check
